@@ -51,7 +51,7 @@ uint8_t eepromExampleWriteFlag = 0;//flag => เพื่อให้ทำง�
 uint8_t eepromExampleReadFlag = 0;
 uint8_t IOExpdrExampleWriteFlag = 0;
 uint8_t IOExpdrExampleReadFlag = 0;
-uint8_t eepromDataReadBack[4];
+uint8_t eepromDataReadBack[1];
 uint8_t IOExpdrDataReadBack;
 uint8_t IOExpdrDataWrite = 0b01010101;
 uint16_t ButtonState[2] = {0};
@@ -117,17 +117,9 @@ int main(void)
 	while (1) {
 		if(HAL_GetTick()-Time>=100){
 			Time = HAL_GetTick();
-//		EEPROMReadExample(eepromDataReadBack, 4);//4
 			ButtonState[0] =  HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13);
-//		EERead[0] = eepromExampleReadFlag;
-//		EEWrite[0] = eepromExampleWriteFlag;
-//		IORead[0] = IOExpdrExampleReadFlag;
-//		IOWrite[0] = IOExpdrExampleWriteFlag;
 			if(ButtonState[1]==1&&ButtonState[0]==0)
 			{
-//				Active=1;
-//			}
-//			if(Active==1){
 				IOExpdrExampleReadFlag = 1;
 				IOExpenderReadPinA(&IOExpdrDataReadBack);//อ่านจากปุ่มกด
 				HAL_Delay(10);
@@ -139,96 +131,20 @@ int main(void)
 				EEPROMWriteExample(IOExpdrDataReadBack);//เก็บไว้ในmem eeprom
 				HAL_Delay(10);
 				eepromExampleReadFlag=1;
-				EEPROMReadExample(eepromDataReadBack, 4);//อ่านข้อมูลในmem eeprom
+				EEPROMReadExample(eepromDataReadBack, 1);
+				//อ่านข้อมูลในmem eeprom
 				HAL_Delay(10);
-//				Active=0;
 			}
 			ButtonState[1] = ButtonState[0];
 			eepromExampleReadFlag=1;
-			EEPROMReadExample(eepromDataReadBack, 4);//อ่านจาก eeprom จาก mem
+			EEPROMReadExample(eepromDataReadBack, 1);
+			//อ่านจาก eeprom จาก mem
 			HAL_Delay(10);
 			IOExpdrExampleWriteFlag=1;
-			IOExpenderWritePinB(eepromDataReadBack[0]);//นำข้อมูลจาก eeprom มาเขียนลงled
+			IOExpenderWritePinB(eepromDataReadBack[0]);
+			//นำข้อมูลจาก eeprom มาเขียนลงled
 			HAL_Delay(10);
 		}
-	//			IOReadActive=1;
-	//			IOWriteActive=1;
-	//			EReadActive=1;
-	//			EWriteActive=1;
-	//			switch(STATE_Display)//ior,iow,eew,eer
-	//			{
-	//				case StateStart://0
-	//					if(Active==1){
-	//					STATE_Display = StateIORead;}
-	//					break;
-	//				case StateIORead://1010
-	//					IOExpdrExampleReadFlag = 1;
-	//
-	//					IOExpenderReadPinA(&IOExpdrDataReadBack);
-	//					if(IORead[1]==0&IORead[0]!=0){
-	////					STATE_Display = StateEEWrite;
-	//						STATE_Display = StateIOWrite;
-	//						}
-	//					Time = HAL_GetTick();
-	//					break;
-	//				case StateEEWrite://10100
-	//					if(HAL_GetTick()-Time>=10){
-	//						eepromExampleWriteFlag = 1;
-	//						EEPROMWriteExample();
-	//					if(EEWrite[1]==0&EEWrite[0]!=0){
-	////					STATE_Display = StateIOWrite;
-	//						STATE_Display = StateEERead;
-	//						}
-	//					Time = HAL_GetTick();
-	//					}
-	//					break;
-	//				case StateIOWrite://11110
-	//					if(HAL_GetTick()-Time>=10){
-	//						IOExpdrExampleWriteFlag=1;
-	//					IOExpenderWritePinB(IOExpdrDataWrite);
-	//					if(IOWrite[1]==0&IOWrite!=0){
-	//					STATE_Display = StateEEWrite;
-	//					}
-	//					Time = HAL_GetTick();
-	//					}
-	//					break;
-	//				case StateEERead://101000
-	//					if(HAL_GetTick()-Time>=10){
-	//						eepromExampleReadFlag=1;
-	//					EEPROMReadExample(eepromDataReadBack, 4);
-	//					if(EERead[1]==0&EERead[0]!=0){
-	//						STATE_Display = StateSuccess;
-	//					}
-	//					Time = HAL_GetTick();
-	//					}
-	//					break;
-	//				case StateSuccess:
-	//					Active=0;
-	//					break;
-	//			}
-	//		if(Active==1){
-	//			IOExpenderReadPinA(&IOExpdrDataReadBack);//read value//1
-	//			IOReadActive=0;
-	//			Time = HAL_GetTick();
-	//			if(HAL_GetTick()-Time>= 10){
-	//					EEPROMWriteExample();//2
-	//				Time = HAL_GetTick();
-	//			}
-	//			if(HAL_GetTick()-Time>= 10){
-	//					IOExpenderWritePinB(IOExpdrDataWrite);//mem value
-	//				Time = HAL_GetTick();
-	//			}
-	//			if(HAL_GetTick()-Time>= 10){
-	//					EEPROMReadExample(eepromDataReadBack, 4);//4
-	//					Time = HAL_GetTick();
-	//			}
-	//		}
-//		EERead[1] = EERead[0];
-//		EEWrite[1] = EEWrite[0];
-//		IORead[1] = IORead[0];
-//		IOWrite[1] = IOWrite[0];
-
-
 
 
     /* USER CODE END WHILE */
@@ -388,11 +304,11 @@ void EEPROMWriteExample(uint8_t *Wdata) {
 //	{
 			if (eepromExampleWriteFlag && hi2c1.State == HAL_I2C_STATE_READY)
 			{
-				static uint8_t data[4] = { 0xff, 0x00, 0x55, 0xaa };
+				static uint8_t data[1] = { 0xff};
 				data[0] = Wdata;
 //			data[0] = (IOExpdrDataReadBack&&0b00001000);
 
-				HAL_I2C_Mem_Write_IT(&hi2c1, EEPROM_ADDR, 0x16, I2C_MEMADD_SIZE_16BIT,data, 4);
+				HAL_I2C_Mem_Write_IT(&hi2c1, EEPROM_ADDR, 0x16, I2C_MEMADD_SIZE_16BIT,data, 1);
 				eepromExampleWriteFlag = 0;
 //				EWriteActive=0;
 			}
